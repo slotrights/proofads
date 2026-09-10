@@ -222,3 +222,56 @@ influence how much is owed — only how much was *observed*. Tested:
 **Actual.** `finalizeAuction` on a listing with no bids marks it `CANCELLED` and frees the slot.
 **Reason.** Leaving the slot permanently blocked by a dead listing is a worse outcome than one
 extra branch. Tested: `test_NoBidsCancelsListingAndFreesSlot`.
+
+---
+
+### ADR-017 — The settlement gas budget is explicit, and an unverified settlement is never reported as success *(found on Sepolia, after the build)*
+
+Three changes made together:
+
+- The workflow requests an explicit gas limit for the Forwarder's call into the receiver:
+  `settlementGasLimit`, a config field defaulting to `900_000`.
+- The workflow no longer prints a settlement when it does not know whether the receiver executed.
+  An absent `receiverContractExecutionStatus` is logged as **UNVERIFIED**, not treated as success.
+- `contracts/test/SettlementGasBudget.t.sol` asserts the budget against `CostlyUSDC`, a token
+  whose transfer costs more than Circle's.
+
+**Why it exists.** The first settlement of campaign 2 on Sepolia
+(`0xf50c3350…50e9f`) is a successful transaction that moved no money. The trace:
+
+```
+MockKeystoneForwarder::route(...)
+  └─ ProofAdsSettlementReceiver::onReport(...)
+      ├─ emit SettlementReportReceived(campaignId: 2, cumulativeVerifiedUnits: 1, ...)
+      └─ ProofAdsMarket::applyDelivery(2, 1, 0xa32b1d11…)
+          └─ FiatTokenProxy::fallback(publisher, 110000)
+              └─ FiatTokenV2_2::transfer(...) [delegatecall]
+                  └─ ← [OutOfGas]
+  └─ ← [Return] false
+emit ReportProcessed(receiver: …, reportId: 0x0001, result: false)
+```
+
+Two independent failures compounded. The first is the gas: the Forwarder's default budget is
+enough for the bare OpenZeppelin ERC-20 the local stack settles against, and not enough for a
+`FiatTokenProxy` delegating into `FiatTokenV2_2` with its pause and blacklist checks. The second is
+that **a reverting receiver does not fail the Forwarder's transaction** — the Forwarder catches the
+revert and records `ReportProcessed(result: false)`. The transaction receipt reads `status 1
+(success)`. The workflow's guard, `receiverContractExecutionStatus !== undefined && … !== 0`, was
+skipped because the status was absent, so the workflow printed
+`Settled campaign 2 at 1 verified units` over a settlement that had reverted.
+
+**What this says about the test suite.** 74 contract tests, 43 workflow tests, 35 end-to-end
+assertions and a real-browser check were all green, and none of them could have caught this,
+because every one of them settles against `MockUSDC`. The gap was not a missing test of existing
+behaviour; it was a property of the *environment* — the price of the settlement token — that the
+local environment did not reproduce. `CostlyUSDC` exists to reproduce it deliberately rather than
+to discover it again on a public network.
+
+**Cost.** A larger gas limit is a ceiling, not a spend — unused gas is refunded. `900_000` sits an
+order of magnitude below the CRE simulator's 10,000,000 ceiling and roughly three times the
+measured worst case (a report that completes a campaign: payout, refund and close in one call).
+
+**What is still not fixed.** The workflow cannot *confirm* a settlement from inside the run when
+the runtime declines to report an execution status; it can only refuse to claim one. Reading
+`verifiedUnitsOf` back after the write would close that, but the read races the write's inclusion.
+Recorded as C14.

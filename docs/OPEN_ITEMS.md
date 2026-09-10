@@ -21,12 +21,12 @@ not on this list, the list is wrong.
 
 | # | Item | State |
 |---|---|---|
-| B1 | **Everything on Sepolia.** The entire slice is proven on a local Anvil chain running the *real* ENSv2 contracts, plus a real browser. Nothing has been deployed to Sepolia, because the build environment has no egress to any Sepolia RPC. | `DEPLOYMENT_PLAN.md` is the runbook. Expect 60–90 minutes including the `.eth` registration wait. |
-| B2 | **`cre workflow simulate`.** The workflow typechecks and its unit tests pass against the real SDK, and the real handler runs end to end under the local harness. It has never been executed by the CRE CLI, because that CLI could not be installed here. | The single highest-value thing to do next. `DEPLOYMENT_PLAN.md` §5. |
+| B1 | ~~**Everything on Sepolia.**~~ **Resolved.** Deployed and exercised on Sepolia: ENSv2 hierarchy, marketplace, auction, escrowed bid, browser measurement and a confidential-workflow settlement. Addresses and transaction hashes in `DEPLOYMENTS.md`. | Closed. |
+| B2 | ~~**`cre workflow simulate`.**~~ **Resolved.** Run under CRE CLI v1.32.0 against Sepolia, dry and with `--broadcast`, producing real Forwarder transactions. Confidential Workflow *deployment* remains private beta and is not claimed. | Closed. The simulator runs the workflow locally, so a `127.0.0.1` collector is reachable and no tunnel is needed. |
 | B3 | **ENSv2 Sepolia addresses.** Two official sources disagree (`PROTOCOL_RESEARCH.md` §1.6). The scripts assert bytecode exists and allow env overrides, but which set is live is unverified. | First step of the runbook. |
 | B4 | **KeystoneForwarder address.** `0x15fC…9F88` comes from the CRE starter-template READMEs, not from a first-party address page. | Verify before deploying the receiver; it is a constructor argument and cannot be changed except by `setForwarderAddress`. |
-| B5 | **Etherscan verification.** `--verify` is in the runbook but has never been exercised for these contracts. | Low risk, unproven. |
-| B6 | **`.eth` registration flow.** `register-eth-name.ts` was written from the `ETHRegistrar` source, and never run. | Registering in the Sepolia ENS app is the lower-risk path; the script is the fallback. |
+| B5 | ~~**Etherscan verification.**~~ **Resolved.** All four ProofAds contracts are verified on Sepolia Etherscan. | Closed. |
+| B6 | ~~**`.eth` registration flow.**~~ **Resolved.** `proofads-pub.eth` registered on the ENSv2 Sepolia beta, with `ads` and the slot labels beneath it. | Closed. |
 
 ## C. Known weaknesses in what *is* implemented
 
@@ -44,6 +44,9 @@ not on this list, the list is wrong.
 | C10 | **The batch-close endpoint is operator-triggered.** Nothing schedules it. In a real deployment it would be a cron on the collector. |
 | C11 | **No rate limiting on the collector.** `POST /events` accepts anything from a valid session. |
 | C12 | **Batch closing is not idempotent at the API layer.** Closing twice creates two batches (by design — the first stays immutable), but an operator who closes twice by accident produces an empty-ish second batch. Harmless, untidy. |
+| C13 | **Over-delivery between hitting the cap and the settling report.** A campaign closes only when the report that reaches `targetUnits` lands on chain. Views measured after the cap is reached but before that report arrives are delivered and never paid for. The fix is about twenty lines in the SDK: read `verifiedUnits` against `targetUnits` before mounting a slot and decline to measure a campaign that is already full. Not implemented. |
+| C14 | **A settlement cannot be confirmed from inside the workflow run.** A reverting receiver does not fail the Forwarder's transaction, and when the runtime reports no `receiverContractExecutionStatus` the workflow cannot tell a settlement from a silent revert. It now says so (logs UNVERIFIED) instead of claiming success — see ADR-017 — but the operator, not the workflow, is still what closes the loop. Reading `verifiedUnitsOf` back after the write races the write's inclusion; a follow-up run that reconciles the previous run's report is the real fix. |
+| C15 | **The settlement gas budget is a constant in three places.** `settlementGasLimit` in `config.staging.json` and `config.production.json`, and `SETTLEMENT_GAS_LIMIT` in `contracts/test/SettlementGasBudget.t.sol`. The test asserts the number is sufficient; nothing asserts the three agree. |
 
 ## D. Product questions still open
 

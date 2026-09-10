@@ -31,6 +31,17 @@ export const configSchema = z.object({
 	receiverAddress: z.string(),
 	/** The marketplace, read for the delivery total already settled on chain. */
 	marketAddress: z.string(),
+	/**
+	 * Gas limit for the Forwarder's call into the receiver.
+	 *
+	 * The SDK default is sized for a cheap ERC-20. Circle's USDC on a public network is a
+	 * FiatTokenProxy delegating into FiatTokenV2_2, with blacklist and pause checks on every
+	 * transfer, and costs several times more than the mock token the local stack settles
+	 * against. Sepolia tx 0xf50c3350...50e9f reverted OutOfGas inside USDC.transfer with the
+	 * default, and the Forwarder swallowed it into ReportProcessed(result: false) — an outwardly
+	 * successful transaction that moved no money. See ADR-017.
+	 */
+	settlementGasLimit: z.string().default('900000'),
 })
 export type Config = z.infer<typeof configSchema>
 
@@ -135,22 +146,33 @@ export const onSettle = (runtime: TeeRuntime<Config>): string => {
 
 	const receiver = new ProofAdsSettlementReceiver(evmClient, config.receiverAddress as Address)
 
-	const writeResult = receiver.writeReport(donRuntime, reportPayload)
+	const writeResult = receiver.writeReport(donRuntime, reportPayload, {
+		gasLimit: config.settlementGasLimit,
+	})
 
 	if (writeResult.txStatus !== TxStatus.SUCCESS) {
 		throw new Error(`Settlement tx failed: ${writeResult.errorMessage || writeResult.txStatus}`)
 	}
-	if (
-		writeResult.receiverContractExecutionStatus !== undefined &&
-		writeResult.receiverContractExecutionStatus !== 0
-	) {
+	// A reverting receiver does NOT fail the Forwarder's transaction. The Forwarder catches the
+	// revert and records it as ReportProcessed(result: false), so txStatus alone says nothing
+	// about whether the money moved. An absent execution status is therefore *unknown*, not
+	// success, and must never be reported as a settlement. See ADR-017.
+	if (writeResult.receiverContractExecutionStatus === undefined) {
+		runtime.log(
+			'WARNING: the runtime did not report a receiver execution status. This result is UNVERIFIED — confirm DeliveryApplied on chain before trusting it.',
+		)
+	} else if (writeResult.receiverContractExecutionStatus !== 0) {
 		throw new Error(
 			`Receiver execution failed: status ${writeResult.receiverContractExecutionStatus}`,
 		)
 	}
 
 	const txHash = bytesToHex(writeResult.txHash || new Uint8Array(32))
-	return `Settled campaign ${config.campaignId} at ${result.cumulativeVerifiedUnits} verified units — tx: ${txHash}`
+	const unverified =
+		writeResult.receiverContractExecutionStatus === undefined
+			? ' [UNVERIFIED: the runtime reported no receiver execution status; confirm DeliveryApplied on chain]'
+			: ''
+	return `Settled campaign ${config.campaignId} at ${result.cumulativeVerifiedUnits} verified units — tx: ${txHash}${unverified}`
 }
 
 // Keeps `hexToBase64` referenced for parity with the official template's report path, which

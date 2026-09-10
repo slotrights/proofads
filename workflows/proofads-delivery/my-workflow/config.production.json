@@ -6,5 +6,6 @@
   "secretId": "PROOFADS_API_TOKEN",
   "chainSelectorName": "ethereum-testnet-sepolia",
   "receiverAddress": "0x0000000000000000000000000000000000000000",
-  "marketAddress": "0x0000000000000000000000000000000000000000"
+  "marketAddress": "0x0000000000000000000000000000000000000000",
+  "settlementGasLimit": "900000"
 }

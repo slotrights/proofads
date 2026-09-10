@@ -16,6 +16,7 @@ const config = (overrides: Partial<Config> = {}): Config => ({
 	chainSelectorName: 'ethereum-testnet-sepolia',
 	receiverAddress: '0x000000000000000000000000000000000000dEaD',
 	marketAddress: '0x000000000000000000000000000000000000bEEF',
+	settlementGasLimit: '900000',
 	...overrides,
 })
 
@@ -32,6 +33,8 @@ function makeFakeTeeRuntime(options: {
 	cfg?: Config
 	txStatus?: number
 	receiverStatus?: number
+	/** Drop `receiverContractExecutionStatus` entirely, as the CRE simulator does. */
+	omitReceiverStatus?: boolean
 	/** Delivery already settled on chain, as the marketplace would report it. */
 	alreadySettled?: number
 }) {
@@ -72,11 +75,17 @@ function makeFakeTeeRuntime(options: {
 				}
 			}
 			return {
-				result: () => ({
-					txStatus: options.txStatus ?? TxStatus.SUCCESS,
-					txHash: new Uint8Array(32).fill(7),
-					receiverContractExecutionStatus: options.receiverStatus ?? 0,
-				}),
+				result: () =>
+					options.omitReceiverStatus
+						? {
+								txStatus: options.txStatus ?? TxStatus.SUCCESS,
+								txHash: new Uint8Array(32).fill(7),
+							}
+						: {
+								txStatus: options.txStatus ?? TxStatus.SUCCESS,
+								txHash: new Uint8Array(32).fill(7),
+								receiverContractExecutionStatus: options.receiverStatus ?? 0,
+							},
 			}
 		},
 	}
@@ -130,6 +139,33 @@ describe('onSettle — the confidential handler', () => {
 	test('returns a settlement summary with the tx hash', () => {
 		const { runtime } = makeFakeTeeRuntime({})
 		expect(onSettle(runtime)).toContain('Settled campaign 1 at 1 verified units')
+	})
+
+	// ── ADR-017 ────────────────────────────────────────────────────────
+	// Circle's USDC costs several times what the mock token the local stack settles against
+	// costs, and a receiver that runs out of gas does NOT fail the Forwarder's transaction.
+
+	test('asks the Forwarder for the configured settlement gas limit', () => {
+		const { runtime, donCalls } = makeFakeTeeRuntime({})
+		onSettle(runtime)
+		// Asserted against the serialised payload rather than a fixed field path: the SDK is free
+		// to nest or rename gasConfig, and what matters is that the limit reaches the capability.
+		const sent = JSON.stringify(donCalls, (_k, v) =>
+			typeof v === 'bigint' ? v.toString() : v,
+		)
+		expect(sent).toContain('900000')
+	})
+
+	test('a missing receiver execution status is reported as UNVERIFIED, never as a settlement', () => {
+		const { runtime, logs } = makeFakeTeeRuntime({ omitReceiverStatus: true })
+		const summary = onSettle(runtime)
+		expect(summary).toContain('UNVERIFIED')
+		expect(logs.some((l) => l.includes('WARNING'))).toBe(true)
+	})
+
+	test('a non-zero receiver execution status throws rather than reporting success', () => {
+		const { runtime } = makeFakeTeeRuntime({ receiverStatus: 1 })
+		expect(() => onSettle(runtime)).toThrow(/Receiver execution failed/)
 	})
 
 	test('crosses to the DON exactly once, to sign a report', () => {

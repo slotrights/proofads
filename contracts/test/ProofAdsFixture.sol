@@ -66,7 +66,7 @@ abstract contract ProofAdsFixture is Test {
         registry.register("sidebar", publisher, IRegistry(address(0)), address(0), OWNER_SLOT_ROLES, slotExpiry);
         vm.stopPrank();
 
-        usdc = new MockUSDC();
+        usdc = _deployUsdc();
         vm.startPrank(deployer);
         adapter = new ENSv2AuthorizationAdapter(IAdInventoryRegistry(address(registry)));
         market = new ProofAdsMarket(usdc, adapter, devMode);
@@ -76,6 +76,12 @@ abstract contract ProofAdsFixture is Test {
 
         usdc.mint(advertiserA, 1_000 * 1e6);
         usdc.mint(advertiserB, 1_000 * 1e6);
+    }
+
+    /// @dev The settlement currency used by the fixture. Overridden by the gas-budget suite,
+    ///      which needs a token whose transfer costs what a real one costs — see ADR-017.
+    function _deployUsdc() internal virtual returns (MockUSDC) {
+        return new MockUSDC();
     }
 
     function _grantSell(address to, bytes32 labelhash) internal {

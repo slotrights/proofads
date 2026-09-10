@@ -1,10 +1,11 @@
 {
   "schedule": "0 */5 * * * *",
   "apiBaseUrl": "http://127.0.0.1:8787",
-  "batchId": "b4690ead-225b-4844-becb-d6fb00422105",
-  "campaignId": 1,
+  "batchId": "707745b0-7d86-4db6-a7cd-847edd658670",
+  "campaignId": 2,
   "secretId": "PROOFADS_API_TOKEN",
   "chainSelectorName": "ethereum-testnet-sepolia",
   "receiverAddress": "0x2dd6236E42266Cf61B2a14109C40b0DB8E58FF54",
-  "marketAddress": "0x60e462CD627A162a3213ae6159e6850977CeaeDd"
+  "marketAddress": "0x60e462CD627A162a3213ae6159e6850977CeaeDd",
+  "settlementGasLimit": "900000"
 }
