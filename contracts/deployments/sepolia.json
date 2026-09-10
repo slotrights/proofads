@@ -1,0 +1,16 @@
+{
+  "adInventoryRegistry": "0x9c85fd2E10298504B468E685012B66DE2dB9dA6a",
+  "authorizationAdapter": "0x051EBAB12B02F27693e0D0E271308Fd64f482975",
+  "chainId": 11155111,
+  "ethRegistry": "0xBDC85dD5b15D7ecb354cd7cb6f2c50b4f2c4F0E2",
+  "keystoneForwarder": "0x15fC6ae953E024d975e77382eEeC56A9101f9F88",
+  "labelStore": "0x532CD0CC4AC0793d838F71A67d29B2D790D18777",
+  "market": "0x60e462CD627A162a3213ae6159e6850977CeaeDd",
+  "publisher": "0x0552AF1e9645A26309092f1E3aA014AbafAA7B80",
+  "publisherName": "proofads-pub.eth",
+  "publisherResolver": "0x16E9F3F133b4cf67Ccae34837Bd41c4c1fEA9aCF",
+  "rootRegistry": "0x8115186E8f2E0B0281e86ab91f0f48Ba90364354",
+  "settlementReceiver": "0x2dd6236E42266Cf61B2a14109C40b0DB8E58FF54",
+  "usdc": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+  "userRegistry": "0xed98dE1ee4e1ca1FB5500B31e466A5C73e3a7e72"
+}

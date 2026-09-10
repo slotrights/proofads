@@ -124,6 +124,16 @@ token id after the grant is printed alongside the unchanged authorization.
 | ETHRegistrar | `0xa885…a2Cc` | `0xa4449a0d…` |
 | UniversalResolverV2 | `0x4A18…3C70` | `0x85edf8b6…` |
 
+**RESOLVED (10 Sep 2026, on Sepolia).** Every address in the docs-page set was checked with
+`cast code` against a live Sepolia RPC and all eleven returned non-empty bytecode:
+`LabelStore`, `ETHRegistry`, `ETHRegistrar`, `VerifiableFactory`, `UserRegistryImpl`,
+`PermissionedResolverImpl`, `RootRegistry`, `UniversalResolverV2`, ENS `MockUSDC`, Circle `USDC`
+and the Chainlink `KeystoneForwarder`. A functional check confirmed it too —
+`ETHRegistrar.isAvailable("proofads-pub")` returned `true`, so the registrar is live and
+responding, not just a contract with code at an address. **The docs-page set wins; the repo's
+`deployments/sepolia/*.json` is stale.** `contracts/script/lib/SepoliaEnsV2.sol` already carries
+the docs set, so no override was needed.
+
 **How ProofAds handles it.** `contracts/script/lib/SepoliaEnsV2.sol` carries the docs-page set,
 `DeploySepolia.s.sol` asserts `address.code.length > 0` for every one it touches before using it,
 and **every address is overridable by an environment variable** (`ENS_LABEL_STORE`,

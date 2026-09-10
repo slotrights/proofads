@@ -3,12 +3,13 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useQueryClient } from '@tanstack/react-query'
-import { useAccount, useWalletClient } from 'wagmi'
+import { useAccount, usePublicClient, useWalletClient } from 'wagmi'
 import { formatUnits, keccak256, type Address, type Hex } from 'viem'
 import { ListingStatus, METRIC_LABELS, MockUSDCAbi, ProofAdsMarketAbi, type MetricType } from '@proofads/shared'
 import { TechnicalDetails } from '@/components/TechnicalDetails'
 import { TxButton } from '@/components/TxButton'
 import { config, slotFullName } from '@/lib/config'
+import { chain } from '@/lib/wagmi'
 import { useBids, useChainTime, useIsAuthorizedSeller, useListings, useSlots, useUsdcBalance } from '@/lib/chain'
 
 /** Two creatives ship with the demo; the browser hashes the bytes it will actually render. */
@@ -103,6 +104,7 @@ function ListingCard(props: {
 	account: Address | undefined
 }) {
 	const { data: walletClient } = useWalletClient()
+	const publicClient = usePublicClient({ chainId: chain.id })
 	const bids = useBids(props.listingId)
 	const chainTime = useChainTime()
 	const sellerAuth = useIsAuthorizedSeller(props.slotLabel, props.seller)
@@ -138,9 +140,12 @@ function ListingCard(props: {
 		const approval = await walletClient.writeContract({
 			address: config.usdc, abi: MockUSDCAbi, functionName: 'approve', args: [config.market, escrow],
 		})
-		// Wait for the approval to land before the bid, so the transfer cannot race it.
-		await new Promise((r) => setTimeout(r, 1500))
-		void approval
+		// The bid pulls the escrow with transferFrom, so the approval must be MINED first — not
+		// merely submitted. Waiting a fixed delay works on a one-second local chain and fails on
+		// any real network, where twelve-second blocks leave the allowance still at zero.
+		if (!publicClient) throw new Error('No RPC client available')
+		const receipt = await publicClient.waitForTransactionReceipt({ hash: approval })
+		if (receipt.status !== 'success') throw new Error('USDC approval failed')
 		return walletClient.writeContract({
 			address: config.market,
 			abi: ProofAdsMarketAbi,
