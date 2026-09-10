@@ -1,0 +1,10 @@
+{
+  "schedule": "0 */5 * * * *",
+  "apiBaseUrl": "https://REPLACE-WITH-YOUR-PUBLIC-API",
+  "batchId": "REPLACE-WITH-A-CLOSED-BATCH-ID",
+  "campaignId": 1,
+  "secretId": "PROOFADS_API_TOKEN",
+  "chainSelectorName": "ethereum-testnet-sepolia",
+  "receiverAddress": "0x0000000000000000000000000000000000000000",
+  "marketAddress": "0x0000000000000000000000000000000000000000"
+}

@@ -1,0 +1,27 @@
+{
+  "name": "proofads",
+  "private": true,
+  "version": "0.1.0",
+  "license": "MIT",
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "typecheck": "pnpm -r --no-bail typecheck",
+    "test": "pnpm -r --no-bail test",
+    "build": "pnpm -r build",
+    "contracts:test": "cd contracts && forge test",
+    "chain": "anvil --host 127.0.0.1 --port 8545 --block-time 1",
+    "deploy:local": "cd contracts && forge script script/DeployLocal.s.sol:DeployLocal --rpc-url $LOCAL_RPC_URL --broadcast --slow",
+    "e2e": "pnpm --filter @proofads/e2e start",
+    "stack": "./scripts/dev-stack.sh",
+    "stack:e2e": "./scripts/dev-stack.sh --e2e",
+    "seed": "pnpm --filter @proofads/e2e seed"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "tsx": "4.20.6",
+    "vitest": "3.2.4"
+  }
+}

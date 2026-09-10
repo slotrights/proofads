@@ -1,0 +1,12 @@
+{
+  "renderedCampaign": "2",
+  "creativeSrc": "http://127.0.0.1:3000/creatives/adv-b.png",
+  "renderedWidthPx": 980,
+  "eventsBefore": 0,
+  "eventsAfter": 13,
+  "qualifyingBefore": 0,
+  "qualifyingAfter": 1,
+  "sessionsAfter": 1,
+  "consoleErrors": []
+}
+BROWSER-CHECK: PASS

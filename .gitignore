@@ -1,0 +1,24 @@
+node_modules/
+.pnpm-store/
+dist/
+.next/
+out/
+coverage/
+
+# Foundry
+contracts/lib/
+contracts/out/
+contracts/cache/
+contracts/broadcast/
+
+# secrets
+.env
+.env.*
+!.env.example
+!.env.local.example
+
+# runtime
+*.log
+.DS_Store
+.env.local
+.devstack/

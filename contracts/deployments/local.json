@@ -1,0 +1,17 @@
+{
+  "adInventoryRegistry": "0x712516e61C8B383dF4A63CFe83d7701Bce54B03e",
+  "authorizationAdapter": "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6",
+  "chainId": 31337,
+  "ethRegistry": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+  "keystoneForwarder": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+  "labelStore": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+  "market": "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318",
+  "publisher": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+  "publisherName": "proofads-pub.eth",
+  "publisherResolver": "0x13137042E4A02D4cFDeC3DB5934d8D6C97D86509",
+  "rootRegistry": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+  "settlementReceiver": "0x610178dA211FEF7D417bC0e6FeD39F05609AD788",
+  "usdc": "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
+  "userRegistry": "0x948B3c65b89DF0B4894ABE91E6D02FE579834F8F",
+  "verifiableFactory": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"
+}

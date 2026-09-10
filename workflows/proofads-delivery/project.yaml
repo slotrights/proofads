@@ -1,0 +1,15 @@
+# ==========================================================================
+# CRE PROJECT SETTINGS — ProofAds delivery settlement
+# ==========================================================================
+# The workflow reads a private measurement batch inside an AWS Nitro enclave and
+# writes one aggregate on chain through the Chainlink Forwarder, so it needs an
+# RPC for the target chain.
+staging-settings:
+  rpcs:
+    - chain-name: ethereum-testnet-sepolia
+      url: https://ethereum-sepolia-rpc.publicnode.com
+
+production-settings:
+  rpcs:
+    - chain-name: ethereum-testnet-sepolia
+      url: https://ethereum-sepolia-rpc.publicnode.com

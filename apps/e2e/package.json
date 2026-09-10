@@ -1,0 +1,23 @@
+{
+  "name": "@proofads/e2e",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/run.ts",
+    "typecheck": "tsc --noEmit",
+    "seed": "tsx src/seed-campaign.ts"
+  },
+  "dependencies": {
+    "@proofads/ens-client": "workspace:*",
+    "@proofads/sdk": "workspace:*",
+    "@proofads/shared": "workspace:*",
+    "viem": "2.34.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.18.1",
+    "playwright": "^1.63.0",
+    "tsx": "4.20.6",
+    "typescript": "5.9.3"
+  }
+}
