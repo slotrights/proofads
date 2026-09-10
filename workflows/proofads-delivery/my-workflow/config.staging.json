@@ -1,6 +1,6 @@
 {
   "schedule": "0 */5 * * * *",
-  "apiBaseUrl": "https://REPLACE-WITH-YOUR-PUBLIC-API",
+  "apiBaseUrl": "http://127.0.0.1:8787",
   "batchId": "REPLACE-WITH-A-CLOSED-BATCH-ID",
   "campaignId": 1,
   "secretId": "PROOFADS_API_TOKEN",

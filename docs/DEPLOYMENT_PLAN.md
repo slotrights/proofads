@@ -104,10 +104,17 @@ Legend: **[you]** needs a human (an account, a faucet, a wallet click). **[cmd]*
 
 ## Phase 5 — Collector and UI (~15 min)
 
-- [ ] **[you]** Provision Postgres and deploy `apps/api` somewhere with a **public HTTPS URL** —
-      Railway, Render or Fly. The Chainlink enclave has to reach it from the public internet.
-      Required env: `DATABASE_URL`, `PROOFADS_API_TOKEN` (long random), `RPC_URL`,
-      `MARKET_ADDRESS`, `CHAIN_ID=11155111`.
+- [ ] **[you]** Run `apps/api` with a Postgres behind it. Required env: `DATABASE_URL`,
+      `PROOFADS_API_TOKEN` (long random), `RPC_URL`, `MARKET_ADDRESS`, `CHAIN_ID=11155111`.
+
+      **A public URL is NOT required for `cre workflow simulate`.** Verified on Sepolia,
+      10 Sep 2026: the simulator runs the workflow locally, so its HTTP capability call
+      originates from your own machine and `http://127.0.0.1:8787` works directly. An earlier
+      draft of this plan claimed a tunnel or a public deployment was needed — that was wrong,
+      and chasing it costs an hour for nothing. Set `apiBaseUrl` to localhost and move on.
+
+      A genuinely public URL only becomes necessary for a real `cre workflow deploy`, where the
+      workflow runs in an actual AWS enclave. That path is private beta anyway.
 - [ ] **[cmd]** Smoke-test the auth boundary:
       ```bash
       curl -i $API_PUBLIC_URL/health                                             # 200
@@ -139,8 +146,13 @@ Legend: **[you]** needs a human (an account, a faucet, a wallet click). **[cmd]*
         -H "Authorization: Bearer $PROOFADS_API_TOKEN" -H 'content-type: application/json' \
         -d '{"campaignId": 1}'
       ```
-- [ ] **[cmd]** Fill in `my-workflow/config.staging.json`: `apiBaseUrl`, `batchId`, `campaignId`,
-      `receiverAddress`, `marketAddress`.
+- [ ] **[cmd]** Fill in `my-workflow/config.staging.json`: `apiBaseUrl` (localhost is fine — see
+      Phase 5), `batchId` **from the close call above**, `campaignId`, `receiverAddress`,
+      `marketAddress`.
+
+      A `404` from the workflow means the batch id is wrong; a `403` means
+      `SECRET_PROOFADS_API_TOKEN` doesn't match the collector's `PROOFADS_API_TOKEN`. The two
+      failures are easy to tell apart, so read the status code before changing anything.
 - [ ] **[cmd]** Dry run, then the real thing:
       ```bash
       cre workflow simulate my-workflow --target staging-settings --non-interactive --trigger-index 0
