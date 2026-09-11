@@ -181,3 +181,8 @@ each claim, and the commit they were deployed from.
 - [OPEN_ITEMS.md](docs/OPEN_ITEMS.md) — every incomplete or under-specified area, named
 - [NEXT_PHASE.md](docs/NEXT_PHASE.md) — what phase 2 is
 
+## Licence
+
+MIT — see [LICENSE](LICENSE). The three files under `contracts/src/chainlink/` are unmodified
+Chainlink starter-template sources, MIT licensed, vendored with their headers intact.
+
