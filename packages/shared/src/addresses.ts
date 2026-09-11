@@ -28,8 +28,7 @@ const ZERO = '0x0000000000000000000000000000000000000000' as const
  *
  * Source: https://docs.ens.domains/learn/deployments (fetched 2026-09-09). The
  * `ensdomains/contracts-v2` repo's `contracts/deployments/sepolia/*.json` disagrees with the
- * docs page for several of these; docs/PROTOCOL_RESEARCH.md records the discrepancy and how
- * to resolve it before deploying. Verify with `cast code <addr>` before use.
+ * docs page for several of these; Verify with `cast code <addr>` before use.
  */
 export const ENSV2_SEPOLIA = {
 	verifiableFactory: '0x10dc6333cdfe1fcef624c6e0a8221b91804cd7ef',

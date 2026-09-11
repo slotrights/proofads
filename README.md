@@ -46,9 +46,6 @@ These lines are load-bearing; the project is careful about them everywhere, incl
 - It is **not** "trustless advertising". The measurement collector is trusted to report what it
   observed; the enclave is trusted to be an enclave. [TRUST_MODEL.md](docs/TRUST_MODEL.md) is the
   full list.
-- The World Selfie Check premium metric is **built but not enabled**: access is gated and was not
-  granted. Nothing about it is faked. See [WORLD_STATUS.md](docs/WORLD_STATUS.md).
-
 ---
 
 ## Architecture
@@ -150,24 +147,10 @@ Step by step instead of the one script: `pnpm deploy:local`, `node scripts/write
 See [docs/DEPLOYMENTS.md](docs/DEPLOYMENTS.md) for the live Sepolia addresses, the transaction
 hashes behind each claim, and the commit they were deployed from.
 
-## Sponsor qualification
-
-[docs/PRIZE_REQUIREMENTS.md](docs/PRIZE_REQUIREMENTS.md) maps every ENS and Chainlink requirement
-to the file, test and transaction that satisfies it.
-
 ## Documentation
 
 - [ARCHITECTURE_DECISIONS.md](docs/ARCHITECTURE_DECISIONS.md) — the ADRs and where reality forced a change
-- [PROTOCOL_RESEARCH.md](docs/PROTOCOL_RESEARCH.md) — what was verified against ENSv2 and CRE sources
-- [TRUST_MODEL.md](docs/TRUST_MODEL.md) — what is enforced and what is trusted
 - [NOVELTY.md](docs/NOVELTY.md) — prior art, and what is and is not new here
 - [OPEN_ITEMS.md](docs/OPEN_ITEMS.md) — every incomplete or under-specified area, named
 - [NEXT_PHASE.md](docs/NEXT_PHASE.md) — what phase 2 is
-- [WORLD_STATUS.md](docs/WORLD_STATUS.md) — why the third track is not claimed
 
-## Licence and attribution
-
-MIT. Built with [Claude Code](https://claude.com/claude-code) (Claude Opus 5) as the primary
-implementation tool; the design, protocol research direction and review are the team's.
-The three files under `contracts/src/chainlink/` are unmodified Chainlink starter-template
-sources, MIT licensed, vendored with their headers intact.
