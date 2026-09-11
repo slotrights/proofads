@@ -22,3 +22,6 @@ contracts/broadcast/
 .DS_Store
 .env.local
 .devstack/
+
+# IDE
+.idea/

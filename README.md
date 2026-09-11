@@ -147,8 +147,8 @@ Step by step instead of the one script: `pnpm deploy:local`, `node scripts/write
 
 ## Deployments
 
-See [docs/DEPLOYMENTS.md](docs/DEPLOYMENTS.md) for addresses and
-[docs/DEPLOYMENT_PLAN.md](docs/DEPLOYMENT_PLAN.md) for the Sepolia runbook.
+See [docs/DEPLOYMENTS.md](docs/DEPLOYMENTS.md) for the live Sepolia addresses, the transaction
+hashes behind each claim, and the commit they were deployed from.
 
 ## Sponsor qualification
 
@@ -161,7 +161,6 @@ to the file, test and transaction that satisfies it.
 - [PROTOCOL_RESEARCH.md](docs/PROTOCOL_RESEARCH.md) — what was verified against ENSv2 and CRE sources
 - [TRUST_MODEL.md](docs/TRUST_MODEL.md) — what is enforced and what is trusted
 - [NOVELTY.md](docs/NOVELTY.md) — prior art, and what is and is not new here
-- [DEMO.md](docs/DEMO.md) — click-by-click demo script
 - [OPEN_ITEMS.md](docs/OPEN_ITEMS.md) — every incomplete or under-specified area, named
 - [NEXT_PHASE.md](docs/NEXT_PHASE.md) — what phase 2 is
 - [WORLD_STATUS.md](docs/WORLD_STATUS.md) — why the third track is not claimed

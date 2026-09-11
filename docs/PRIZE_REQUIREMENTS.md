@@ -18,7 +18,7 @@ names the file, test or artefact that satisfies it.
 | **Permissioned Resolvers** | Slot metadata lives in `PermissionedResolver` text records (`com.proofads.placement`, `com.proofads.domain`), written through its EAC-gated `setText` and read by the UI. | `DeployLocal.s.sol::_setTextRecords`, `apps/web/lib/chain.ts::useSlots` |
 | **Functional demo with no hardcoded values** | Every authorization badge, owner, expiry, listing, bid and campaign field in the UI is a live contract read. `apps/web/lib/config.ts` holds only addresses, injected from the deployment JSON at build time. After a grant or revoke the UI refetches from chain rather than updating optimistically. | `apps/web/lib/chain.ts`, `apps/web/components/TxButton.tsx`, screenshots in `docs/evidence/` |
 | **Open-source code** | MIT, whole repository. | `LICENSE` |
-| **Video or live demo** | `docs/DEMO.md` is the click-by-click script; `docs/PRESENTATION.md` is the recording plan. | — |
+| **Video or live demo** | Live deployment, plus a recorded walkthrough of grant → revoke → list → bid → finalize → measured delivery → settlement. | Submission page; screenshots in `docs/evidence/` |
 
 **The ENS demonstration in one paragraph.** An agency is granted `ROLE_SELL_SLOT` on `hero` and
 nothing else. It lists `hero` successfully. The identical call against `sidebar` reverts with

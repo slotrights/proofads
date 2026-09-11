@@ -137,8 +137,8 @@ the docs set, so no override was needed.
 **How ProofAds handles it.** `contracts/script/lib/SepoliaEnsV2.sol` carries the docs-page set,
 `DeploySepolia.s.sol` asserts `address.code.length > 0` for every one it touches before using it,
 and **every address is overridable by an environment variable** (`ENS_LABEL_STORE`,
-`ENS_ETH_REGISTRY`, …). The runbook in `DEPLOYMENT_PLAN.md` step 2 makes verifying them the first
-action of the deployment. This is a real, current inconsistency in a beta protocol; the honest
+`ENS_ETH_REGISTRY`, …). Verifying every one of them against the live network is the first action
+of the deployment. This is a real, current inconsistency in a beta protocol; the honest
 engineering answer is to verify at deploy time rather than pick a side in a document.
 
 ---
@@ -201,7 +201,7 @@ turn accepts only `msg.sender == settlementReceiver`. Two independent gates, bot
 Confidential Workflows are in **private beta for deployment**. Simulation via
 `cre workflow simulate` works without Early Access and prints a banner saying the simulator is not
 a real TEE. ProofAds says "simulated confidential execution" everywhere and never claims a
-production enclave run. `DEPLOYMENT_PLAN.md` §5 has the exact commands.
+production enclave run.
 
 Because the CRE CLI could not be installed in the environment this build ran in (its download host
 is not reachable, and `cre login` needs an account), the repository also ships
