@@ -25,3 +25,6 @@ contracts/broadcast/
 
 # IDE
 .idea/
+
+# Recording script — kept local, not part of the submission
+docs/DEMO_VIDEO.md

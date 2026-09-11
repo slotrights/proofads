@@ -63,22 +63,68 @@ and `WORLD_FEEDBACK.md` written **while** integrating. ~1 day. See `WORLD_STATUS
 Rate limiting on `/events`; scheduled batch closing; a pause switch on the marketplace; metrics; a
 real migration tool instead of idempotent DDL.
 
+### 9. An autonomous buying agent
+
+Almost by accident, the three things an AI agent needs in order to be trusted with a budget are
+already here — and none of them exist in today's ad stack:
+
+1. **Inventory that is machine-identifiable.** A slot is an ENS name with an owner and a role
+   graph. An agent can discover it, verify who may sell it and verify who gets paid, without a
+   sales relationship or a human on either side.
+2. **A reward signal the counterparty cannot inflate.** `verifiedUnits` is attested by the enclave
+   and signed by the DON. Every optimiser in performance marketing today is trained on numbers
+   reported by the party being paid; this one is not.
+3. **A budget the substrate enforces.** Escrow is `unitPrice × targetUnits`, approved up front. An
+   agent cannot overspend a campaign, because the contract will not let it — the bound is not in the
+   prompt, the policy or the harness, it is in the chain.
+
+Point 3 is the one that matters. "Give an agent money and let it buy ads" is unsafe today because
+both failure modes are unbounded: spend runs away, and delivery is unverifiable. Here both are
+capped by construction, which makes an agent an ordinary participant rather than a risk.
+
+**Buyer side.** Read open listings, score each slot by historical cost per *verified* unit, bid,
+commit a `creativeHash`, withdraw losing bids, close campaigns for the refund. A contextual bandit
+over slots does most of this; the model earns its place in turning a brief
+("finance readers, no more than X per verified view, spend by Friday") into constraints, choosing
+creative, and explaining why a slot underdelivered.
+
+**Seller side.** Reserve-price discovery from observed clearing prices, campaign duration from
+observed fill rates, and delegation hygiene — an agency whose listings consistently underdeliver
+loses `ROLE_SELL_SLOT` automatically. Revocation is already a single call that takes effect on the
+next marketplace read, so the enforcement primitive exists.
+
+**The part that needs the enclave.** A buyer wants richer signals than a unit count — dwell
+distribution, frequency across sessions, how close the near-misses came. Those are exactly the
+aggregates that must not be published. The same confidential workflow can compute them and return
+them *only to the advertiser who paid for that campaign*: private analytics as a settled product,
+not a dashboard built on a data leak.
+
+**What would have to be true first.** Sealed bids (item 5) stop being a nicety — two agents in a
+thin market will either ratchet each other or quietly converge, and open bids make both easy. Key
+custody and a scoped allowance are real work. And a verified view is a floor, not an outcome: a
+browser rendered an image, which is not a conversion. Attribution is the obvious next ask and it
+reintroduces the privacy problem this project exists to solve — which is the honest reason to build
+it inside the enclave rather than beside it.
+
+~2 weeks for a baseline buyer agent against the current contracts; the private-analytics return path
+is a phase of its own.
+
 ## Tier 3 — research
 
-### 9. Replace the TEE with a proof
+### 10. Replace the TEE with a proof
 
 A ZK circuit over the batch that proves "these events satisfy these rules" without an attestation
 assumption. Strictly better than a TEE for this exact shape of problem — a fixed rule set over a
 bounded batch — and strictly harder. The confidential workflow is the pragmatic version of the same
 idea and would remain the fallback path.
 
-### 10. Richer metrics
+### 11. Richer metrics
 
 Video completion, scroll depth, interaction. Each is a new measurement definition, a new
 qualification branch and a new set of arguments about what counts. The architecture takes them; the
 industry consensus does not exist.
 
-### 11. Cross-chain settlement
+### 12. Cross-chain settlement
 
 Publishers on one chain, advertisers on another, via CCIP. Deliberately out of scope for the
 hackathon (single-chain rule) and a real ask from anyone operating at scale.
@@ -91,3 +137,6 @@ hackathon (single-chain rule) and a real ask from anyone operating at scale.
 - **An on-chain measurement log.** It is the exact thing the confidential workflow exists to avoid.
 - **Claiming human attention.** Everything above stays inside "a browser rendered this for this
   long". The moment ProofAds claims more, its distinguishing feature — being checkable — is gone.
+- **An agent that reports its own performance.** The whole point of item 9 is that the agent's
+  reward signal comes from the enclave and the chain. An agent trusted to grade itself is the
+  mistake ProofAds was built to correct, wearing a newer hat.
