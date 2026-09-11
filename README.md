@@ -10,6 +10,20 @@ verified privately inside a Chainlink Confidential Workflow.**
 Positioning: *ads.txt-style seller authorization, but granular, revocable, programmable, and
 enforced per ad slot by ENSv2.*
 
+## Live demo
+
+**<https://proofads.charmine.xyz>**
+
+Running against the Ethereum Sepolia deployment in [docs/DEPLOYMENTS.md](docs/DEPLOYMENTS.md).
+Bring a wallet on Sepolia; every value on every screen is read from chain.
+
+| Page | What it shows |
+|---|---|
+| [/](https://proofads.charmine.xyz) | The inventory — each ad slot, its ENS name, its owner and who may sell it |
+| [/publisher](https://proofads.charmine.xyz/publisher) | Grant and revoke `ROLE_SELL_SLOT`; the authorization badge flips on the next block |
+| [/advertiser](https://proofads.charmine.xyz/advertiser) | Bid with escrowed USDC, finalize, withdraw a losing bid |
+| [/demo-publisher](https://proofads.charmine.xyz/demo-publisher) | "The Sepolia Times" — a real page carrying the winning creative. Keep the slot in view for ten seconds and it earns a measured unit. |
+
 ---
 
 ## The problem
