@@ -12,8 +12,16 @@ import { config, slotFullName } from '@/lib/config'
 import { chain } from '@/lib/wagmi'
 import { useBids, useChainTime, useIsAuthorizedSeller, useListings, useSlots, useUsdcBalance } from '@/lib/chain'
 
-/** Two creatives ship with the demo; the browser hashes the bytes it will actually render. */
+/**
+ * Creatives that ship with the demo; the browser hashes the bytes it will actually render.
+ *
+ * The two gradients came first and are kept because live campaigns committed their hashes on
+ * chain — replacing those bytes would make the creative fail verification and the slot render
+ * nothing. The two banners are invented brands, for a demo that looks like advertising.
+ */
 const CREATIVES = [
+	{ id: 'adv-c', label: 'Verra Botanicals — shampoo', path: '/creatives/adv-c.png' },
+	{ id: 'adv-d', label: 'Meridian & Co — watch', path: '/creatives/adv-d.png' },
 	{ id: 'adv-a', label: 'Creative A — blue', path: '/creatives/adv-a.png' },
 	{ id: 'adv-b', label: 'Creative B — amber', path: '/creatives/adv-b.png' },
 ] as const
