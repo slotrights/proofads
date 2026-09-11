@@ -158,8 +158,21 @@ Step by step instead of the one script: `pnpm deploy:local`, `node scripts/write
 
 ## Deployments
 
-See [docs/DEPLOYMENTS.md](docs/DEPLOYMENTS.md) for the live Sepolia addresses, the transaction
-hashes behind each claim, and the commit they were deployed from.
+Four contracts on **Ethereum Sepolia** (`11155111`), block 11674651, all verified on Etherscan.
+
+| Contract | Address | What it is |
+|---|---|---|
+| `AdInventoryRegistry` | [`0x9c85fd2E…9dA6a`](https://sepolia.etherscan.io/address/0x9c85fd2E10298504B468E685012B66DE2dB9dA6a) | The inventory. Extends ENS's `PermissionedRegistry`; each ad slot is a real ENSv2 name, and `ROLE_SELL_SLOT` is the right to sell it. |
+| `ENSv2AuthorizationAdapter` | [`0x051EBAB1…82975`](https://sepolia.etherscan.io/address/0x051EBAB12B02F27693e0D0E271308Fd64f482975) | Stateless reads of ENS: who owns a slot, and who may sell it *right now*. Caches nothing. |
+| `ProofAdsMarket` | [`0x60e462CD…eaeDd`](https://sepolia.etherscan.io/address/0x60e462CD627A162a3213ae6159e6850977CeaeDd) | Listings, first-price auction, USDC escrow, settlement and refunds. Pays the slot's ENS owner, never the caller. |
+| `ProofAdsSettlementReceiver` | [`0x2dd6236E…8FF54`](https://sepolia.etherscan.io/address/0x2dd6236E42266Cf61B2a14109C40b0DB8E58FF54) | The only door into settlement. Forwarder-gated; decodes the confidential workflow's signed report into `applyDelivery`. |
+
+The publisher's `UserRegistry` and `PermissionedResolver` are ENS implementations behind
+`VerifiableFactory` proxies. Circle USDC, the ENSv2 beta contracts and the Chainlink
+`KeystoneForwarder` were already on Sepolia and are only referenced.
+
+See [docs/DEPLOYMENTS.md](docs/DEPLOYMENTS.md) for every address, the transaction hashes behind
+each claim, and the commit they were deployed from.
 
 ## Documentation
 
