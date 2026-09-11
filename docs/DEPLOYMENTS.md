@@ -63,42 +63,50 @@ names from the compiled ABI, so it cannot drift from the contracts.
 | Confidential workflow settlement, campaign 1 | `0x7068177d302a2e2c9e0cc8e85bf32e0c11b0837d6a1f15f9cbe5bd716d1d106f` |
 | Confidential workflow settlement, campaign 2 — **failed, kept deliberately** | `0xf50c335068be3d3942362c29a4f7f382e04de7ff98c0b21e98268ec1b6450e9f` |
 | Confidential workflow settlement, campaign 2 — succeeded | `0x320ea411dca80ff25cc457cd52995eb50fa4a6f16fde05e8c711deac3536e29b` |
-| Confidential workflow settlement, campaign 3 — **the submission demo** | `0xf64fc79f10fd556ded1e0304277a3b8422f0bab5ed646169c39ba545c48307d6` |
+| Confidential workflow settlement, campaign 3 | `0xf64fc79f10fd556ded1e0304277a3b8422f0bab5ed646169c39ba545c48307d6` |
+| Confidential workflow settlement, campaign 4 — **the submission demo** | `0x5c55e06350996b367cdc8bd4756c3691530acf41a90f1730f8d478ec76934f28` |
 | `createListing` / `placeBid` / `finalizeAuction` / `DeliveryApplied` / `CampaignClosed` | *(harvest with the script above)* |
 
-**Campaign 3 — the state the submission screenshots show.** Listed by the delegated agency
-`0x5cAE3014bE16BB9EE74127D36b9cF1683Ec25207` on `hero`, bid by advertiser
-`0x92F34E0E0ad9982E6915CC3cD650c7E14e88a446`, creative served from the public deployment at
-`https://proofads.charmine.xyz/creatives/adv-a.png`, and settled through the **public** collector
-rather than a local one:
+**Campaign 4 — the state the submission screenshots show.** Listing 7 on `hero`, opened by the
+delegated agency `0x5cAE3014bE16BB9EE74127D36b9cF1683Ec25207`, won by advertiser
+`0xc5A2862eE906Af923596Fa48BA95f6cc3C6247EB`, carrying the Meridian & Co banner served from the
+public deployment at `https://proofads.charmine.xyz/creatives/adv-d.png`, and settled through the
+**public** collector rather than a local one:
 
 | | |
 |---|---|
-| Enclave output | `batchEvents=36 newUnits=2 alreadySettled=0 cumulative=2 rejected[NOT_A_QUALIFYING_EVENT=34]` |
-| Verified delivery | 2 of 3 units |
-| Released to publisher | 0.22 USDC |
-| Still escrowed | 0.11 USDC |
-| Settlement tx | `0xf64fc79f10fd556ded1e0304277a3b8422f0bab5ed646169c39ba545c48307d6` |
+| Enclave output | `batchEvents=15 newUnits=1 alreadySettled=0 cumulative=1 rejected[NOT_A_QUALIFYING_EVENT=14]` |
+| Verified delivery | 1 of 3 units |
+| Unit price | 0.11 USDC |
+| Released to publisher | 0.11 USDC |
+| Still escrowed | 0.22 USDC |
+| Measurement at capture | 30 raw events · 2 qualifying views · 2 sessions · 15 not yet batched |
+| Settlement tx | `0x5c55e06350996b367cdc8bd4756c3691530acf41a90f1730f8d478ec76934f28` |
 
-The agency sold the slot; the publisher `0x0552AF1e9645A26309092f1E3aA014AbafAA7B80` was paid.
+The agency sold the slot; the publisher `0x0552AF1e9645A26309092f1E3aA014AbafAA7B80` was paid. The
+campaign is deliberately left **partially delivered** — a fully delivered campaign closes itself and
+frees the slot, and a screenshot of an empty slot proves nothing.
 
-The four logs of that transaction, kept in `evidence/etherscan-settlement-campaign3.png`, are the
+The four logs of that transaction, kept in `evidence/etherscan-settlement-campaign4.png`, are the
 whole settlement path in one receipt:
 
 | # | Contract | Event |
 |---|---|---|
-| 148 | `ProofAdsSettlementReceiver` | `SettlementReportReceived(campaignId 3, cumulativeVerifiedUnits 2, batchDigest 0x403DDCB2…, window 1789127700→1789128024)` |
-| 149 | Circle USDC | `Transfer(market → publisher, 220000)` |
-| 150 | `ProofAdsMarket` | `DeliveryApplied(3, reported 2, effective 2, payoutDelta 220000, batchDigest 0x403DDCB2…)` |
-| 151 | Chainlink `KeystoneForwarder` | `ReportProcessed(receiver, workflowExecutionId, reportId 0x0001, result: true)` |
+| 253 | `ProofAdsSettlementReceiver` | `SettlementReportReceived(campaignId 4, cumulativeVerifiedUnits 1, batchDigest 0xD07F42D8…, window 1789153020→1789153032)` |
+| 254 | Circle USDC | `Transfer(market → publisher, 110000)` |
+| 255 | `ProofAdsMarket` | `DeliveryApplied(4, reported 1, effective 1, payoutDelta 110000, batchDigest 0xD07F42D8…)` |
+| 256 | Chainlink `KeystoneForwarder` | `ReportProcessed(receiver, workflowExecutionId, reportId 0x0001, result: true)` |
 
-Two details are worth pointing at. The identical `batchDigest` in logs 148 and 150 is the replay
+Two details are worth pointing at. The identical `batchDigest` in logs 253 and 255 is the replay
 protection of ADR-016 visible on chain — the same digest arriving again is a no-op, not a second
-payment. And `result: true` in log 151 is precisely the field that read `false` in the
+payment. And `result: true` in log 256 is precisely the field that read `false` in the
 gas-starved attempt below; the Forwarder reports receiver failure there and nowhere else, which
 is why ADR-017 exists.
 
-Terminal output for the same run is in `evidence/cre-simulate-campaign3.png`.
+Terminal output for the same run is in `evidence/cre-simulate-campaign4.png`.
+
+**Campaign 3** settled the same way one run earlier — `0xf64fc79f…07d6`, 2 of 3 units,
+0.22 USDC released — against the gradient creative, before the demo banners existed.
 
 **The settlement that worked.** `0x320ea411…36e29b`, the same batch and the same report as the
 failed attempt, re-run after ADR-017 raised the gas limit. One unit of verified attention:

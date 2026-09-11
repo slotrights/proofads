@@ -131,7 +131,7 @@ That one script starts Postgres and Anvil, deploys the full ENSv2 hierarchy plus
 the collector and the web app at the fresh deployment, and then runs the end-to-end proof —
 35 assertions covering grant → revocation-revert → listing → escrowed bids → finalization →
 refund → 10-second measurement → immutable batch → confidential handler → forwarder → USDC payout →
-close → refund. Output is kept in [`docs/evidence/e2e-run.txt`](docs/evidence/e2e-run.txt).
+close → refund.
 
 Then open http://127.0.0.1:3000/demo-publisher, and:
 
