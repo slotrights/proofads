@@ -1,8 +1,8 @@
 {
   "schedule": "0 */5 * * * *",
-  "apiBaseUrl": "http://127.0.0.1:8787",
-  "batchId": "707745b0-7d86-4db6-a7cd-847edd658670",
-  "campaignId": 2,
+  "apiBaseUrl": "https://proofads.charmine.xyz/api",
+  "batchId": "7339b01f-3adf-4a79-be6a-f34f5fa1203a",
+  "campaignId": 3,
   "secretId": "PROOFADS_API_TOKEN",
   "chainSelectorName": "ethereum-testnet-sepolia",
   "receiverAddress": "0x2dd6236E42266Cf61B2a14109C40b0DB8E58FF54",

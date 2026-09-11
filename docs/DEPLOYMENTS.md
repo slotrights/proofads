@@ -63,7 +63,42 @@ names from the compiled ABI, so it cannot drift from the contracts.
 | Confidential workflow settlement, campaign 1 | `0x7068177d302a2e2c9e0cc8e85bf32e0c11b0837d6a1f15f9cbe5bd716d1d106f` |
 | Confidential workflow settlement, campaign 2 — **failed, kept deliberately** | `0xf50c335068be3d3942362c29a4f7f382e04de7ff98c0b21e98268ec1b6450e9f` |
 | Confidential workflow settlement, campaign 2 — succeeded | `0x320ea411dca80ff25cc457cd52995eb50fa4a6f16fde05e8c711deac3536e29b` |
+| Confidential workflow settlement, campaign 3 — **the submission demo** | `0xf64fc79f10fd556ded1e0304277a3b8422f0bab5ed646169c39ba545c48307d6` |
 | `createListing` / `placeBid` / `finalizeAuction` / `DeliveryApplied` / `CampaignClosed` | *(harvest with the script above)* |
+
+**Campaign 3 — the state the submission screenshots show.** Listed by the delegated agency
+`0x5cAE3014bE16BB9EE74127D36b9cF1683Ec25207` on `hero`, bid by advertiser
+`0x92F34E0E0ad9982E6915CC3cD650c7E14e88a446`, creative served from the public deployment at
+`https://proofads.charmine.xyz/creatives/adv-a.png`, and settled through the **public** collector
+rather than a local one:
+
+| | |
+|---|---|
+| Enclave output | `batchEvents=36 newUnits=2 alreadySettled=0 cumulative=2 rejected[NOT_A_QUALIFYING_EVENT=34]` |
+| Verified delivery | 2 of 3 units |
+| Released to publisher | 0.22 USDC |
+| Still escrowed | 0.11 USDC |
+| Settlement tx | `0xf64fc79f10fd556ded1e0304277a3b8422f0bab5ed646169c39ba545c48307d6` |
+
+The agency sold the slot; the publisher `0x0552AF1e9645A26309092f1E3aA014AbafAA7B80` was paid.
+
+The four logs of that transaction, kept in `evidence/etherscan-settlement-campaign3.png`, are the
+whole settlement path in one receipt:
+
+| # | Contract | Event |
+|---|---|---|
+| 148 | `ProofAdsSettlementReceiver` | `SettlementReportReceived(campaignId 3, cumulativeVerifiedUnits 2, batchDigest 0x403DDCB2…, window 1789127700→1789128024)` |
+| 149 | Circle USDC | `Transfer(market → publisher, 220000)` |
+| 150 | `ProofAdsMarket` | `DeliveryApplied(3, reported 2, effective 2, payoutDelta 220000, batchDigest 0x403DDCB2…)` |
+| 151 | Chainlink `KeystoneForwarder` | `ReportProcessed(receiver, workflowExecutionId, reportId 0x0001, result: true)` |
+
+Two details are worth pointing at. The identical `batchDigest` in logs 148 and 150 is the replay
+protection of ADR-016 visible on chain — the same digest arriving again is a no-op, not a second
+payment. And `result: true` in log 151 is precisely the field that read `false` in the
+gas-starved attempt below; the Forwarder reports receiver failure there and nowhere else, which
+is why ADR-017 exists.
+
+Terminal output for the same run is in `evidence/cre-simulate-campaign3.png`.
 
 **The settlement that worked.** `0x320ea411…36e29b`, the same batch and the same report as the
 failed attempt, re-run after ADR-017 raised the gas limit. One unit of verified attention:
